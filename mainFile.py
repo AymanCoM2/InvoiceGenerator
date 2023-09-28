@@ -2,7 +2,6 @@ from connectionExecution import fillResults
 
 headerFooterResult , rowResult = fillResults(50)
 
-
 for hfRow in headerFooterResult:
     print(hfRow) # Prints the Tuple Of the Data 
 
