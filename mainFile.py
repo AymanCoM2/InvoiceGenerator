@@ -28,6 +28,7 @@ font.size = Pt(8)
 
 dummy_data = finalDataList
 
+
 header_data = [
     "", "", "345345", "XCXC",
     str(headerFooterList[5]), str(headerFooterList[5]),
@@ -36,18 +37,21 @@ header_data = [
 
 if len(document.tables) > 0:
     table = document.tables[0]
-    table.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-    # Iterate over all 9 cells in the table
-    for i in range(len(header_data)):
+    # Iterate over all 9 cells in the table and populate them
+    for i, data in enumerate(header_data):
         row = i // len(table.columns)
         col = i % len(table.columns)
         cell = table.cell(row, col)
-        cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-        cell.text = header_data[i]
+        cell.text = data
+
+        # Set the alignment for each paragraph in the cell to center
+        for paragraph in cell.paragraphs:
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     # Set the text for the merged cell in the last row
-    merged_cell = table.cell(4, 0)  # Assuming it's the first cell in the last row
+    # Assuming it's the first cell in the last row
+    merged_cell = table.cell(4, 0)
     merged_cell.text = header_data[7]
     merged_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
 
