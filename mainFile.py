@@ -28,12 +28,19 @@ header_data = ["", "", "", str(headerFooterList[5]), str(
 footer_data = [str(headerFooterList[8]), str(headerFooterList[9]), str(
     headerFooterList[10]), str(headerFooterList[11]), str(headerFooterList[12])]
 
-# if len(document.tables) > 0:
-#     table = document.tables[0]
-#     for i in range(len(header_data)):
-#         for j in range(len(table.columns)):
-#             cell = table.cell(i, j)
-#             cell.text = header_data[i]
+if len(document.tables) > 0:
+    table = document.tables[0]
+
+    # Populate the first four rows
+    for i in range(min(len(header_data), 4)):
+        for j in range(len(table.columns)):
+            cell = table.cell(i, j)
+            cell.text = header_data[i]
+
+    # Handle the merged cell in the last row
+    # Assuming the merged cell is in the first column
+    merged_cell = table.cell(4, 1)
+    merged_cell.text = header_data[7]  # Set the text for the merged cell
 
 if len(document.tables) > 1:
     table = document.tables[1]
