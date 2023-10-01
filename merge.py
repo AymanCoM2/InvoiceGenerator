@@ -1,14 +1,11 @@
-# Importing the required packages
-
 from docxcompose.composer import Composer
 from docx import Document as Document_compose
-# filename_master is name of the file you want to merge the docx file into
-master = Document_compose('main1.docx')
 
-composer = Composer(master)
-# filename_second_docx is the name of the second docx file
-doc2 = Document_compose('footer.docx')
-# append the doc2 into the master using composer.append function
-composer.append(doc2)
-# Save the combined docx with a name
-composer.save("combined.docx")
+
+def combineParts(fileNamesList):
+    master = Document_compose(fileNamesList[0])
+    composer = Composer(master)
+    for x in range(1, len(fileNamesList)):
+        doc2 = Document_compose(fileNamesList[x])
+        composer.append(doc2)
+    composer.save("combined.docx")
