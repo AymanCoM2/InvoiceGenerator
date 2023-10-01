@@ -3,13 +3,10 @@ from docx.shared import Pt
 from connectionExecution import connectionResults
 
 
-
 def fillingFooterFunction():
     headerFooterResult, rowResult = connectionResults(80)
     headerFooterList = headerFooterResult[0]
-
     document = Document('pt2.docx')
-
     style = document.styles['Normal']
     font = style.font
     font.name = 'Cascadia Code'
@@ -17,10 +14,8 @@ def fillingFooterFunction():
     font.rtl = True
     font.size = Pt(8)
 
-
     footer_data = [str(headerFooterList[8]), str(headerFooterList[9]), str(
         headerFooterList[10]), str(headerFooterList[11]), str(headerFooterList[12])]
-
 
     if len(document.tables) > 0:
         table = document.tables[0]

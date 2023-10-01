@@ -49,7 +49,6 @@ for i, chunk in enumerate(data_chunks):
 
     if len(document.tables) > 0:
         header_table = document.tables[0]
-        # Check if the number of cells in the table matches the length of header_data
         if len(header_table.rows) * len(header_table.columns) == len(header_data):
             for j, data in enumerate(header_data):
                 row_index = j // len(header_table.columns)
