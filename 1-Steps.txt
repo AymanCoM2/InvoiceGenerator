@@ -1,0 +1,5 @@
+1- Filling Data in Their Place 
+2- Font and Margin OF the Text 
+3- Font Size and Borders Of the Table 
+
+PARSING DATA to look exactly Like INVOICE 

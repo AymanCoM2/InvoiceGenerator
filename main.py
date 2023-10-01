@@ -14,7 +14,7 @@ finalDataList = []
 header_data = [
     "", "", "345345", "XCXC",
     str(headerFooterList[5]), str(headerFooterList[5]),
-    "", str(headerFooterList[2]), str(headerFooterList[1])
+    "", str(headerFooterList[1]), "G023", str(headerFooterList[2])
 ]
 
 for rRow in rowResult:
@@ -22,15 +22,12 @@ for rRow in rowResult:
         rRow[6]) + str(rRow[7]), str(rRow[1]), str(rRow[3]), str(rRow[2]), "1"]
     finalDataList.append(internalList)
 
-# Split finalDataList into chunks of 7 elements each
 chunk_size = 7
 data_chunks = [finalDataList[i:i + chunk_size]
                for i in range(0, len(finalDataList), chunk_size)]
 
-# List to store the generated file names
 file_names = []
 for i, chunk in enumerate(data_chunks):
-    # Create a new Document based on 'pt1.docx'
     document = Document('pt1.docx')
     style = document.styles['Normal']
     font = style.font
@@ -49,18 +46,22 @@ for i, chunk in enumerate(data_chunks):
         else:
             print(
                 f"Table 1 in 'pt1.docx' does not have enough rows for chunk {i + 1}.")
+
     if len(document.tables) > 0:
         header_table = document.tables[0]
-        for j, data in enumerate(header_data):
-            header_row = j // len(header_table.columns)
-            header_col = j % len(header_table.columns)
-            header_cell = header_table.cell(header_row, header_col)
-            header_cell.text = data
-            for paragraph in header_cell.paragraphs:
-                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        merged_cell = header_table.cell(4, 0)
-        merged_cell.text = header_data[7]
-        merged_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        # Check if the number of cells in the table matches the length of header_data
+        if len(header_table.rows) * len(header_table.columns) == len(header_data):
+            for j, data in enumerate(header_data):
+                row_index = j // len(header_table.columns)
+                col_index = j % len(header_table.columns)
+                header_cell = header_table.cell(row_index, col_index)
+                header_cell.text = data
+                for paragraph in header_cell.paragraphs:
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        else:
+            print(
+                "The number of cells in the table does not match the length of header_data.")
+
     file_name = f'main{i + 1}.docx'
     document.save(file_name)
     file_names.append(file_name)
