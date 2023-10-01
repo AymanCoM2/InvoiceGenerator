@@ -1,11 +1,20 @@
 from docxcompose.composer import Composer
 from docx import Document as Document_compose
+from docx2pdf import convert
+from pypdf import PdfMerger
+pdfFiles = []
 
 
 def combineParts(fileNamesList):
-    master = Document_compose(fileNamesList[0])
-    composer = Composer(master)
-    for x in range(1, len(fileNamesList)):
-        doc2 = Document_compose(fileNamesList[x])
-        composer.append(doc2)
-    composer.save("combined.docx")
+    for docx_file in fileNamesList:
+        convert(docx_file)
+        pdf_file = docx_file.replace('.docx', '.pdf')
+        print(f"Converted {docx_file} to {pdf_file}")
+        pdfFiles.append(pdf_file)
+
+
+    merger = PdfMerger()
+    for pdf in pdfFiles:
+        merger.append(pdf)
+    merger.write("result.pdf")
+    merger.close()

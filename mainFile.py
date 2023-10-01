@@ -3,31 +3,13 @@ from docx.shared import Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from connectionExecution import connectionResults
 from fillFooter import fillingFooterFunction
-headerFooterResult, rowResult = connectionResults(80)
+from merge import combineParts
+
+# Assuming you have a function connectionResults(80) to retrieve data
+headerFooterResult, rowResult = connectionResults(10)
 headerFooterList = headerFooterResult[0]
+
 finalDataList = []
-
-counter = 1
-for rRow in rowResult:
-    internalList = [str(rRow[7]), str(rRow[5]), str(rRow[9]), str(rRow[5]), str(
-        rRow[6]) + str(rRow[7]), str(rRow[1]), str(rRow[3]), str(rRow[2]), "1"]
-
-    counter = counter + 1
-    if counter == 9:
-        break
-    finalDataList.append(internalList)
-
-document = Document('pt1.docx')
-
-style = document.styles['Normal']
-font = style.font
-font.name = 'Cascadia Code'
-font.complex_script = True
-font.rtl = True
-font.size = Pt(8)
-
-dummy_data = finalDataList
-
 
 header_data = [
     "", "", "345345", "XCXC",
@@ -35,38 +17,55 @@ header_data = [
     "", str(headerFooterList[2]), str(headerFooterList[1])
 ]
 
-if len(document.tables) > 0:
-    table = document.tables[0]
+for rRow in rowResult:
+    internalList = [str(rRow[7]), str(rRow[5]), str(rRow[9]), str(rRow[5]), str(
+        rRow[6]) + str(rRow[7]), str(rRow[1]), str(rRow[3]), str(rRow[2]), "1"]
+    finalDataList.append(internalList)
 
-    # Iterate over all 9 cells in the table and populate them
-    for i, data in enumerate(header_data):
-        row = i // len(table.columns)
-        col = i % len(table.columns)
-        cell = table.cell(row, col)
-        cell.text = data
+# Split finalDataList into chunks of 7 elements each
+chunk_size = 7
+data_chunks = [finalDataList[i:i + chunk_size]
+               for i in range(0, len(finalDataList), chunk_size)]
 
-        # Set the alignment for each paragraph in the cell to center
-        for paragraph in cell.paragraphs:
-            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+# List to store the generated file names
+file_names = []
+for i, chunk in enumerate(data_chunks):
+    # Create a new Document based on 'pt1.docx'
+    document = Document('pt1.docx')
+    style = document.styles['Normal']
+    font = style.font
+    font.name = 'Cascadia Code'
+    font.complex_script = True
+    font.rtl = True
+    font.size = Pt(8)
+    if len(document.tables) > 1:
+        table = document.tables[1]
+        num_rows = len(table.rows)
+        if num_rows >= len(chunk):
+            for j in range(len(chunk)):
+                for k in range(len(chunk[j])):
+                    cell = table.cell(j, k)
+                    cell.text = chunk[j][k]
+        else:
+            print(
+                f"Table 1 in 'pt1.docx' does not have enough rows for chunk {i + 1}.")
+    if len(document.tables) > 0:
+        header_table = document.tables[0]
+        for j, data in enumerate(header_data):
+            header_row = j // len(header_table.columns)
+            header_col = j % len(header_table.columns)
+            header_cell = header_table.cell(header_row, header_col)
+            header_cell.text = data
+            for paragraph in header_cell.paragraphs:
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        merged_cell = header_table.cell(4, 0)
+        merged_cell.text = header_data[7]
+        merged_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    file_name = f'main{i + 1}.docx'
+    document.save(file_name)
+    file_names.append(file_name)
 
-    # Set the text for the merged cell in the last row
-    # Assuming it's the first cell in the last row
-    merged_cell = table.cell(4, 0)
-    merged_cell.text = header_data[7]
-    merged_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-
-
-if len(document.tables) > 1:
-    table = document.tables[1]
-    num_rows = len(table.rows)
-    num_cols = len(table.columns)
-    if num_rows >= len(dummy_data) and num_cols >= len(dummy_data[0]):
-        for i in range(len(dummy_data)):
-            for j in range(len(dummy_data[i])):
-                cell = table.cell(i, j)
-                cell.text = dummy_data[i][j]
-    else:
-        print("Table 1 does not have enough rows or columns for the dummy data.")
-
-document.save('main1.docx')
 fillingFooterFunction()
+file_names.append('footer.docx')
+combineParts(file_names)
+print("Generated files:", file_names)
