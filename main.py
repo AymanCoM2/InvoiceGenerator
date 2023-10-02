@@ -27,6 +27,14 @@ data_chunks = [finalDataList[i:i + chunk_size]
                for i in range(0, len(finalDataList), chunk_size)]
 
 file_names = []
+
+
+
+
+
+
+
+
 for i, chunk in enumerate(data_chunks):
     document = Document('pt1.docx')
     style = document.styles['Normal']
@@ -43,9 +51,26 @@ for i, chunk in enumerate(data_chunks):
                 for k in range(len(chunk[j])):
                     cell = table.cell(j, k)
                     cell.text = chunk[j][k]
+                    # Set alignment to right for the cell's paragraphs
+                    for paragraph in cell.paragraphs:
+                        paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+                    
         else:
             print(
                 f"Table 1 in 'pt1.docx' does not have enough rows for chunk {i + 1}.")
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     if len(document.tables) > 0:
         header_table = document.tables[0]
